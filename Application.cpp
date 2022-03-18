@@ -2,6 +2,15 @@
 #include "Dx12Wrapper.h"
 #include "PMDRenderer.h"
 #include "PMDActor.h"
+#include "Print.h"
+#include "SceneController.h"
+#include "Input.h"
+#include <memory>
+//#include <imgui.h>
+//#include <imgui_impl_win32.h>
+//#include <imgui_impl_dx12.h>
+
+
 
 namespace
 {
@@ -51,10 +60,14 @@ HRESULT Application::Init()
 	CreateGameWindow(m_hwnd, m_windowClass);
 
 	m_dx12Wrapper.reset(new Dx12Wrapper(m_hwnd));
+	m_print.reset(new Print(*m_dx12Wrapper));
+	
+
 	m_pmdRenderer.reset(new PMDRenderer(*m_dx12Wrapper));
 	m_pmdActor.reset(new PMDActor("model/初音ミク.pmd", *m_pmdRenderer, *m_dx12Wrapper));
 	m_pmdActor->LoadVMDFile("motion/motion.vmd");
 	m_pmdActor->PlayAnimation();
+
 	return result;
 }
 
@@ -62,7 +75,10 @@ void Application::Run()
 {
 	MSG msg = {};
 	ShowWindow(m_hwnd, SW_SHOW); // ウィンドウ表示
-	while (true)
+	auto input = std::make_shared<Input>();
+	auto sceneCon = std::make_unique<SceneController>(*input.get());
+
+	while (!input->IsDown(input->BUTTON_ID_UP))
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -85,13 +101,18 @@ void Application::Run()
 
 		m_dx12Wrapper->SetScene();
 
+		sceneCon->SceneUpdate();
+
 		m_pmdActor->Update();
 		m_pmdActor->Draw();
 
+		m_print->Draw();
+		
 		m_dx12Wrapper->EndDraw();
-
 		//フリップ
 		m_dx12Wrapper->Swapchain()->Present(1, 0);
+		m_print->Commit();
+		
 	}
 	
 }

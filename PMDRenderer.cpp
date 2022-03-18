@@ -27,8 +27,8 @@ namespace
 PMDRenderer::PMDRenderer(Dx12Wrapper& dx12)
 	: m_dx12Wrapper(&dx12)
 {
-	assert(SUCCEEDED(CreateRootSignatureForPMD()));
-	assert(SUCCEEDED(CreateGraphicsPipelineForPMD()));
+	CreateRootSignatureForPMD();
+	CreateGraphicsPipelineForPMD();
 
 	m_whiteTex = CreateWhiteTexture();
 	m_blackTex = CreateBlackTexture();
