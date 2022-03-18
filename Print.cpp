@@ -6,8 +6,6 @@
 Print::Print(Dx12Wrapper& dx12)
 	: m_dx12(&dx12)
 {
-	// フォント用処理
-	m_gmemory.reset(new DirectX::GraphicsMemory(m_dx12->Device()));
 	// SpriteBatchオブジェクトの初期化
 	DirectX::ResourceUploadBatch resUploadBatch(m_dx12->Device());
 	resUploadBatch.Begin();
@@ -39,11 +37,6 @@ void Print::Draw()
 	m_spriteFont->DrawString(m_spriteBatch.get(), "Hellow World", DirectX::XMFLOAT2(102, 102), DirectX::Colors::Black);
 	m_spriteFont->DrawString(m_spriteBatch.get(), "Hellow World", DirectX::XMFLOAT2(100, 100), DirectX::Colors::Yellow);
 	m_spriteBatch->End();
-}
-
-void Print::Commit()
-{
-	m_gmemory->Commit(m_dx12->CmdQue());
 }
 
 void Print::DrawBegin()

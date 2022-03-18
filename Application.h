@@ -26,12 +26,7 @@ private:
 	// ウィンドウ周り
 	WNDCLASSEX m_windowClass = {};
 	HWND m_hwnd = {};
-	std::shared_ptr<Dx12Wrapper> m_dx12Wrapper = nullptr;
-	std::shared_ptr<PMDRenderer> m_pmdRenderer = nullptr;
-	std::shared_ptr<PMDActor> m_pmdActor = nullptr;
-	std::unique_ptr<Print> m_print = nullptr;
 	
-
 	// ウィンドウ定数
 	const unsigned int m_windowWidth = 1280;
 	const unsigned int m_windowHeight = 720;

@@ -10,6 +10,8 @@ Input::Input()
 	initKeyCode.push_back(VK_UP);
 	initKeyCode.push_back(VK_DOWN);
 	initKeyCode.push_back('0');
+	initKeyCode.push_back(VK_RETURN);
+	initKeyCode.push_back(VK_ESCAPE);
 	
 	for (int i = 0; i < BUTTON_ID_MAX; i++)
 	{

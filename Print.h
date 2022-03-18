@@ -12,18 +12,16 @@ class Print
 {
 private:
 	// DitectXTK
-	unique_ptr<GraphicsMemory> m_gmemory = nullptr; // グラフィックスメモリオブジェクト
 	unique_ptr<SpriteBatch> m_spriteBatch = nullptr; // スプライト表示用オブジェクト
 	unique_ptr<SpriteFont> m_spriteFont = nullptr; // フォント表示用オブジェクト
 	ComPtr<ID3D12DescriptorHeap> m_heapForSpriteFont = nullptr;
 
-	shared_ptr<Dx12Wrapper> m_dx12 = nullptr;
+	Dx12Wrapper* m_dx12 = nullptr;
 public:
 	Print(Dx12Wrapper& dx12);
 	~Print() {}
 
 	void Draw();
-	void Commit();
 	void DrawBegin();
 	void DrawString(const char* str, DirectX::XMFLOAT2 pos, XMVECTORF32 color);
 	void DrawEnd();
