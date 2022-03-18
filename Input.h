@@ -11,9 +11,9 @@ public:
         BUTTON_ID_UP,
         BUTTON_ID_DOWN,
         BUTTON_ID_0,        // ‚»‚Ì‘¼ƒ{ƒ^ƒ“
-        /*BUTTON_ID_1,
+        BUTTON_ID_1,
         BUTTON_ID_2,
-        BUTTON_ID_3,
+        /*BUTTON_ID_3,
         BUTTON_ID_4,
         BUTTON_ID_5,
         BUTTON_ID_6,

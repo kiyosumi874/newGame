@@ -3,9 +3,9 @@
 #include "Input.h"
 using namespace std;
 
-SceneController::SceneController(Input& input)
+SceneController::SceneController(Input& input, Dx12Wrapper& dx12)
 {
-	m_scene.emplace_front(make_unique<TitleScene>(*this, input));
+	m_scene.emplace_front(make_unique<TitleScene>(*this, input, dx12));
 }
 
 SceneController::~SceneController()
@@ -13,11 +13,11 @@ SceneController::~SceneController()
 	m_scene.clear();
 }
 
-void SceneController::SceneUpdate()
+bool SceneController::SceneUpdate()
 {
 	if (m_scene.empty())
 	{
-		return;
+		return false;
 	}
 	m_scene.front()->Update();
 	auto rit = m_scene.rbegin();
@@ -25,6 +25,7 @@ void SceneController::SceneUpdate()
 	{
 		(*rit)->Draw();
 	}
+	return true;
 }
 
 void SceneController::ChangeScene(std::unique_ptr<Scene> scene)

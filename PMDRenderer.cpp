@@ -55,7 +55,7 @@ ID3D12Resource* PMDRenderer::CreateDefaultTexture(size_t width, size_t height)
 	auto resDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UNORM, width, height);
 	auto texHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK, D3D12_MEMORY_POOL_L0);
 	ID3D12Resource* buff = nullptr;
-	auto result = m_dx12Wrapper.get()->Device()->CreateCommittedResource(
+	auto result = m_dx12Wrapper->Device()->CreateCommittedResource(
 		&texHeapProp,
 		D3D12_HEAP_FLAG_NONE,//特に指定なし
 		&resDesc,
@@ -149,7 +149,7 @@ HRESULT PMDRenderer::CreateGraphicsPipelineForPMD()
 		"BasicVS", "vs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0, &vsBlob, &errorBlob);
-	if (!CheckShaderCompileResult(result, errorBlob.Get())) 
+	if (!CheckShaderCompileResult(result, errorBlob.Get()))
 	{
 		assert(0);
 		return result;
@@ -159,7 +159,7 @@ HRESULT PMDRenderer::CreateGraphicsPipelineForPMD()
 		"BasicPS", "ps_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0, &psBlob, &errorBlob);
-	if (!CheckShaderCompileResult(result, errorBlob.Get())) 
+	if (!CheckShaderCompileResult(result, errorBlob.Get()))
 	{
 		assert(0);
 		return result;
@@ -204,7 +204,7 @@ HRESULT PMDRenderer::CreateGraphicsPipelineForPMD()
 
 	gpipeline.SampleDesc.Count = 1;//サンプリングは1ピクセルにつき１
 	gpipeline.SampleDesc.Quality = 0;//クオリティは最低
-	result = m_dx12Wrapper.get()->Device()->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(m_pipeline.ReleaseAndGetAddressOf()));
+	result = m_dx12Wrapper->Device()->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(m_pipeline.ReleaseAndGetAddressOf()));
 	if (FAILED(result))
 	{
 		assert(SUCCEEDED(result));
@@ -243,7 +243,7 @@ HRESULT PMDRenderer::CreateRootSignatureForPMD()
 		assert(SUCCEEDED(result));
 		return result;
 	}
-	result = m_dx12Wrapper.get()->Device()->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(m_rootSignature.ReleaseAndGetAddressOf()));
+	result = m_dx12Wrapper->Device()->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(m_rootSignature.ReleaseAndGetAddressOf()));
 	if (FAILED(result)) 
 	{
 		assert(SUCCEEDED(result));

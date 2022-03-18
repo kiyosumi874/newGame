@@ -10,8 +10,6 @@
 //#include <imgui_impl_win32.h>
 //#include <imgui_impl_dx12.h>
 
-
-
 namespace
 {
 	// 面倒だけど書かなあかんやつ
@@ -59,26 +57,21 @@ HRESULT Application::Init()
 	// ゲーム用ウィンドウの作成
 	CreateGameWindow(m_hwnd, m_windowClass);
 
-	m_dx12Wrapper.reset(new Dx12Wrapper(m_hwnd));
-	m_print.reset(new Print(*m_dx12Wrapper));
-	
-
-	m_pmdRenderer.reset(new PMDRenderer(*m_dx12Wrapper));
-	m_pmdActor.reset(new PMDActor("model/初音ミク.pmd", *m_pmdRenderer, *m_dx12Wrapper));
-	m_pmdActor->LoadVMDFile("motion/motion.vmd");
-	m_pmdActor->PlayAnimation();
-
 	return result;
 }
 
 void Application::Run()
 {
+	
+
+	auto dx12 = std::make_unique<Dx12Wrapper>(m_hwnd);
+	auto input = std::make_unique<Input>();
+	auto sceneCon = std::make_unique<SceneController>(*input.get(), *dx12.get());
+	unique_ptr<GraphicsMemory> gmemory = make_unique<GraphicsMemory>(dx12->Device()); // グラフィックスメモリオブジェクト
 	MSG msg = {};
 	ShowWindow(m_hwnd, SW_SHOW); // ウィンドウ表示
-	auto input = std::make_shared<Input>();
-	auto sceneCon = std::make_unique<SceneController>(*input.get());
 
-	while (!input->IsDown(input->BUTTON_ID_UP))
+	while (true)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -90,28 +83,11 @@ void Application::Run()
 		{
 			break;
 		}
-		// 全体の描画準備
-		m_dx12Wrapper->BeginDraw();
-		// PMD用の描画パイプラインに合わせる
-		m_dx12Wrapper->CommandList()->SetPipelineState(m_pmdRenderer->GetPipelineState());
-		// ルートシグネチャもPMD用に合わせる
-		m_dx12Wrapper->CommandList()->SetGraphicsRootSignature(m_pmdRenderer->GetRootSignature());
-	
-		m_dx12Wrapper->CommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		m_dx12Wrapper->SetScene();
-
-		sceneCon->SceneUpdate();
-
-		m_pmdActor->Update();
-		m_pmdActor->Draw();
-
-		m_print->Draw();
-		
-		m_dx12Wrapper->EndDraw();
-		//フリップ
-		m_dx12Wrapper->Swapchain()->Present(1, 0);
-		m_print->Commit();
+		if (!sceneCon->SceneUpdate())
+		{
+			break;
+		}
 		
 	}
 	

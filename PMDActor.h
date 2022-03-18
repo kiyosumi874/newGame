@@ -93,8 +93,8 @@ private:
 		std::unordered_map<std::string, bool> ikEnableTable;
 	};
 
-	std::shared_ptr<Dx12Wrapper> m_dx12Wrapper = nullptr;
-	std::shared_ptr<PMDRenderer> m_pmdRenderer = nullptr;
+	Dx12Wrapper* m_dx12Wrapper = nullptr;
+	PMDRenderer* m_pmdRenderer = nullptr;
 
 	// ’¸“_ŠÖŒW
 	ComPtr<ID3D12Resource> m_vertexBuffer = nullptr;

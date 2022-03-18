@@ -10,7 +10,7 @@ class Dx12Wrapper;
 class PMDRenderer
 {
 private:
-	std::shared_ptr<Dx12Wrapper> m_dx12Wrapper = nullptr;
+	Dx12Wrapper* m_dx12Wrapper = nullptr;
 
 	ComPtr<ID3D12PipelineState> m_pipeline = nullptr; // PMD用パイプライン
 	ComPtr<ID3D12RootSignature> m_rootSignature = nullptr; // PMD用ルートシグネチャ
