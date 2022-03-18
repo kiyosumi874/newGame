@@ -53,6 +53,12 @@ private:
 	// テクスチャテーブル
 	std::unordered_map<std::string, ComPtr<ID3D12Resource>> m_textureTable;
 
+	// ヒープ保持用
+	ComPtr<ID3D12DescriptorHeap> m_heapForImgui = nullptr;
+
+	// 汎用ヒープ生成
+	ComPtr<ID3D12DescriptorHeap> CreateOneDescriptorHeapSRV();
+
 	// デバッグレイヤーを有効にする
 	HRESULT EnableDebugLayer();
 	// DXGIFactoryの初期化
@@ -92,11 +98,36 @@ public:
 	void EndDraw(); // 描画終わり
 	void SetScene(); // 現在のシーン(ビュープロジェクション)をセット
 
+
+	void WaitForCommandQueue();
+
 	/// テクスチャパスから必要なテクスチャバッファへのポインタを返す
 	/// @param texpath テクスチャファイルパス
 	ComPtr<ID3D12Resource> GetTextureByPath(const char* texpath);
 
-	ComPtr<ID3D12Device> Device() { return m_device; } // デバイス
-	ComPtr<ID3D12GraphicsCommandList> CommandList() { return m_cmdList; } // コマンドリスト
+	// Imgui用のヒープアクセサー
+	ComPtr<ID3D12DescriptorHeap> GetHeapForImgui()
+	{
+		return m_heapForImgui;
+	}
+
+	ID3D12Device* Device() { return m_device.Get(); } // デバイス
+	ID3D12GraphicsCommandList* CommandList() { return m_cmdList.Get(); } // コマンドリスト
 	ComPtr<IDXGISwapChain4> Swapchain() { return m_swapChain; } // スワップチェイン
+
+	// ビューポートを返す
+	D3D12_VIEWPORT GetViewPort() const
+	{
+		return *m_viewPort;
+	}
+
+	ID3D12CommandQueue* CmdQue()
+	{
+		return m_cmdQueue.Get();
+	}
+
+	//SpriteFont用のDescriptorHeapを返す
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeapForSpriteFont();
+
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeapForImgUi();
 };

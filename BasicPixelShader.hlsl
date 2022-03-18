@@ -11,7 +11,8 @@ SamplerState smpToon:register(s1);//1番スロットに設定されたサンプラ
 
 //定数バッファ1
 //マテリアル用
-cbuffer Material : register(b2) {
+cbuffer Material : register(b2) 
+{
 	float4 diffuse;//ディフューズ色
 	float4 specular;//スペキュラ
 	float3 ambient;//アンビエント
@@ -20,7 +21,8 @@ cbuffer Material : register(b2) {
 
 
 
-float4 BasicPS(BasicType input ) : SV_TARGET{
+float4 BasicPS(BasicType input ) : SV_TARGET
+{
 	float3 light = normalize(float3(1,-1,1));//光の向かうベクトル(平行光線)
 	float3 lightColor = float3(1,1,1);//ライトのカラー(1,1,1で真っ白)
 

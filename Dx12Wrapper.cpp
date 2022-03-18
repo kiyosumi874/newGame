@@ -80,6 +80,7 @@ Dx12Wrapper::Dx12Wrapper(HWND hwnd)
 	funcVec.push_back(&Dx12Wrapper::InitializeIDXGIFactory);
 	funcVec.push_back(&Dx12Wrapper::InitializeID3D12Device);
 	funcVec.push_back(&Dx12Wrapper::InitializeCommand);
+	//funcVec.push_back(&Dx12Wrapper::CreateDescriptorHeapForImgui);
 
 	for (auto func : funcVec)
 	{
@@ -189,6 +190,26 @@ void Dx12Wrapper::SetScene()
 	m_cmdList->SetGraphicsRootDescriptorTable(0, m_sceneDescHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
+void Dx12Wrapper::WaitForCommandQueue()
+{
+	//仮に初回として_fenceValueが0だったとします
+	m_cmdQueue->Signal(m_fence.Get(), ++m_fenceVal);
+	//↑の命令直後では_fenceValueは1で、
+	//GetCompletedValueはまだ0です。
+	if (m_fence->GetCompletedValue() < m_fenceVal) {
+		//もしまだ終わってないなら、イベント待ちを行う
+		//↓そのためのイベント？あとそのための_fenceValue
+		auto event = CreateEvent(nullptr, false, false, nullptr);
+		//フェンスに対して、CompletedValueが_fenceValueに
+		//なったら指定のイベントを発生させるという命令↓
+		m_fence->SetEventOnCompletion(m_fenceVal, event);
+		//↑まだイベント発生しない
+		//↓イベントが発生するまで待つ
+		WaitForSingleObject(event, INFINITE);
+		CloseHandle(event);
+	}
+}
+
 ComPtr<ID3D12Resource> Dx12Wrapper::GetTextureByPath(const char* texpath)
 {
 	auto it = m_textureTable.find(texpath);
@@ -204,9 +225,35 @@ ComPtr<ID3D12Resource> Dx12Wrapper::GetTextureByPath(const char* texpath)
 	}
 }
 
+ComPtr<ID3D12DescriptorHeap> Dx12Wrapper::CreateDescriptorHeapForSpriteFont()
+{
+	return CreateOneDescriptorHeapSRV();
+}
+
+ComPtr<ID3D12DescriptorHeap> Dx12Wrapper::CreateDescriptorHeapForImgUi()
+{
+	return CreateOneDescriptorHeapSRV();
+}
+
+
 //--------------------------------------------
 // privateClass
 //--------------------------------------------
+
+ComPtr<ID3D12DescriptorHeap> Dx12Wrapper::CreateOneDescriptorHeapSRV()
+{
+	ComPtr<ID3D12DescriptorHeap> ret;
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	desc.NodeMask = 0;
+	desc.NumDescriptors = 1;
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+	m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(ret.ReleaseAndGetAddressOf()));
+
+	return ret;
+}
+
 
 HRESULT Dx12Wrapper::EnableDebugLayer()
 {
